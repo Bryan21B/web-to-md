@@ -1,0 +1,96 @@
+{
+  "name": "web-to-md",
+  "title": "Web to Markdown",
+  "description": "Convert a webpage’s main article content into a Markdown file (saved to Downloads by default) and copy it to the clipboard.",
+  "icon": "🌐",
+  "author": "bryan-perso",
+  "license": "MIT",
+  "platforms": ["macOS"],
+  "categories": ["Productivity", "Developer Tools"],
+  "commands": [
+    {
+      "name": "convert-webpage-to-markdown",
+      "title": "Convert Webpage to Markdown",
+      "description": "Extract the main article content and save it as a Markdown file.",
+      "mode": "view",
+      "arguments": [
+        {
+          "name": "url",
+          "type": "text",
+          "placeholder": "URL (optional)"
+        }
+      ],
+      "preferences": [
+        {
+          "name": "outputDirectory",
+          "type": "directory",
+          "required": false,
+          "title": "Output Directory",
+          "description": "Where to save generated .md files.",
+          "default": {
+            "macOS": "~/Downloads"
+          }
+        },
+        {
+          "name": "fileNameStyle",
+          "type": "dropdown",
+          "required": false,
+          "title": "Filename Style",
+          "description": "How to name the generated file.",
+          "default": "title-slug",
+          "data": [
+            { "title": "Title Slug", "value": "title-slug" },
+            { "title": "Date + Title Slug", "value": "date-title-slug" }
+          ]
+        },
+        {
+          "name": "includeFrontmatter",
+          "type": "checkbox",
+          "required": false,
+          "title": "Frontmatter",
+          "description": "Include YAML frontmatter at the top of the Markdown file.",
+          "label": "Include frontmatter",
+          "default": false
+        },
+        {
+          "name": "externalFallbackEnabled",
+          "type": "checkbox",
+          "required": false,
+          "title": "External Fallback",
+          "description": "If local extraction fails, optionally fetch content from an external reader service (sends the URL to a third party).",
+          "label": "Enable external fallback",
+          "default": false
+        },
+        {
+          "name": "externalFallbackPrefix",
+          "type": "textfield",
+          "required": false,
+          "title": "External Fallback Prefix",
+          "description": "Prefix used to build the fallback URL, e.g. https://r.jina.ai/http:// or https://r.jina.ai/https:// (prefix should include scheme and any trailing slashes).",
+          "placeholder": "https://r.jina.ai/https://",
+          "default": ""
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "@raycast/api": "^1.102.0",
+    "linkedom": "^0.18.0",
+    "sanitize-filename": "^1.6.3",
+    "turndown": "^7.2.0",
+    "turndown-plugin-gfm": "^1.0.2"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.0.4",
+    "@types/turndown": "^5.0.5",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0"
+  },
+  "scripts": {
+    "dev": "ray develop",
+    "build": "ray build -e dist",
+    "lint": "ray lint",
+    "test": "node --import tsx --test"
+  }
+}
