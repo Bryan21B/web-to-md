@@ -1,15 +1,20 @@
 import { extractArticleMarkdown, extractFallbackMarkdown } from "./extract";
 import { buildFrontmatter, combineFrontmatterAndBody } from "./frontmatter";
-import { saveMarkdownToFile } from "./save";
 import type { CommandPreferences } from "./types";
 
 export type ConvertPreferences = CommandPreferences;
+
+export type ConversionResult = {
+  markdown: string;
+  title: string | undefined;
+  url: string;
+};
 
 export async function convertWebpageToMarkdown(options: {
   url: string;
   preferences: ConvertPreferences;
   onProgress?: (message: string) => void;
-}): Promise<{ markdown: string; outputPath: string }> {
+}): Promise<ConversionResult> {
   const { url, preferences, onProgress } = options;
 
   onProgress?.("Extracting main content…");
@@ -29,13 +34,5 @@ export async function convertWebpageToMarkdown(options: {
   const frontmatter = buildFrontmatter(extracted, preferences.includeFrontmatter ?? false);
   const markdown = combineFrontmatterAndBody(frontmatter, extracted.bodyMarkdown);
 
-  onProgress?.("Saving file…");
-  const outputPath = await saveMarkdownToFile({
-    title: extracted.title,
-    markdown,
-    url,
-    preferences,
-  });
-
-  return { markdown, outputPath };
+  return { markdown, title: extracted.title, url };
 }
