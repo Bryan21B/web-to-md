@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Clipboard, Detail, Form, LaunchProps, Toast, closeMainWindow, getPreferenceValues, popToRoot, showToast } from "@raycast/api";
+import { Action, ActionPanel, BrowserExtension, Clipboard, Detail, Form, LaunchProps, Toast, closeMainWindow, getPreferenceValues, popToRoot, showToast } from "@raycast/api";
 import { useEffect, useMemo, useState } from "react";
 import { convertWebpageToMarkdown } from "./lib/convert";
 import { looksLikeUrl, normalizeUrl } from "./lib/url";
@@ -10,7 +10,7 @@ export default function ConvertWebpageToMarkdownCommand(props: Props) {
   const preferences = getPreferenceValues<CommandPreferences>();
   const argUrl = props.arguments.url?.trim();
 
-  const [initialClipboardUrl, setInitialClipboardUrl] = useState<string>("");
+  const [initialUrl, setInitialUrl] = useState<string>("");
   const [running, setRunning] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("Preparing…");
   const [error, setError] = useState<string | null>(null);
@@ -20,16 +20,29 @@ export default function ConvertWebpageToMarkdownCommand(props: Props) {
   useEffect(() => {
     let cancelled = false;
 
-    async function readClipboard() {
+    async function resolveInitialUrl() {
+      // Prefer the active browser tab URL
+      try {
+        const tabs = await BrowserExtension.getTabs();
+        const activeTab = tabs.find((tab) => tab.active);
+        if (!cancelled && activeTab?.url && looksLikeUrl(activeTab.url)) {
+          setInitialUrl(activeTab.url);
+          return;
+        }
+      } catch {
+        // Browser extension not installed — fall through to clipboard
+      }
+
+      // Fall back to clipboard
       try {
         const text = (await Clipboard.readText())?.trim() ?? "";
-        if (!cancelled && looksLikeUrl(text)) setInitialClipboardUrl(text);
+        if (!cancelled && looksLikeUrl(text)) setInitialUrl(text);
       } catch {
         // ignore clipboard errors
       }
     }
 
-    void readClipboard();
+    void resolveInitialUrl();
 
     return () => {
       cancelled = true;
@@ -103,7 +116,7 @@ export default function ConvertWebpageToMarkdownCommand(props: Props) {
         id="url"
         title="URL"
         placeholder="https://example.com/blog-post"
-        defaultValue={looksLikeUrl(argUrl ?? "") ? argUrl : initialClipboardUrl}
+        defaultValue={looksLikeUrl(argUrl ?? "") ? argUrl : initialUrl}
       />
     </Form>
   );
