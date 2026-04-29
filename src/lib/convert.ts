@@ -26,7 +26,7 @@ export async function convertWebpageToMarkdown(options: {
     throw new Error("Could not extract meaningful article content from the page.");
   }
 
-  const frontmatter = preferences.includeFrontmatter ? buildFrontmatter(extracted) : null;
+  const frontmatter = buildFrontmatter(extracted, preferences.includeFrontmatter ?? false);
   const markdown = combineFrontmatterAndBody(frontmatter, extracted.bodyMarkdown);
 
   onProgress?.("Saving file…");

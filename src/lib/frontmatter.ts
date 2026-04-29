@@ -2,15 +2,16 @@ import type { ExtractedArticle } from "./extract";
 
 export type Frontmatter = Record<string, string>;
 
-export function buildFrontmatter(extracted: ExtractedArticle): Frontmatter {
-  const createdAt = new Date().toISOString();
+export function buildFrontmatter(extracted: ExtractedArticle, includeRichMetadata: boolean): Frontmatter {
   const out: Frontmatter = {
-    source_url: extracted.sourceUrl,
-    created_at: createdAt,
+    sourceURL: extracted.sourceUrl,
+    savedDate: new Date().toISOString(),
   };
 
-  if (extracted.title) out.title = extracted.title;
-  if (extracted.author) out.author = extracted.author;
+  if (includeRichMetadata) {
+    if (extracted.title) out.title = extracted.title;
+    if (extracted.author) out.author = extracted.author;
+  }
 
   return out;
 }
