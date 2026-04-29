@@ -2,7 +2,10 @@ import type { ExtractedArticle } from "./extract";
 
 export type Frontmatter = Record<string, string>;
 
-export function buildFrontmatter(extracted: ExtractedArticle, includeRichMetadata: boolean): Frontmatter {
+export function buildFrontmatter(
+  extracted: ExtractedArticle,
+  includeRichMetadata: boolean,
+): Frontmatter {
   const out: Frontmatter = {
     sourceURL: extracted.sourceUrl,
     savedDate: new Date().toISOString(),
@@ -16,7 +19,10 @@ export function buildFrontmatter(extracted: ExtractedArticle, includeRichMetadat
   return out;
 }
 
-export function combineFrontmatterAndBody(frontmatter: Frontmatter | null, bodyMarkdown: string): string {
+export function combineFrontmatterAndBody(
+  frontmatter: Frontmatter | null,
+  bodyMarkdown: string,
+): string {
   const body = bodyMarkdown.trim() + "\n";
   if (!frontmatter) return body;
 

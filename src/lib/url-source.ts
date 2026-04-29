@@ -1,7 +1,9 @@
 import { Clipboard } from "@raycast/api";
 import { looksLikeUrl, normalizeUrl } from "./url";
 
-export async function resolveUrlFromArgOrClipboard(argUrl: string | undefined): Promise<string | null> {
+export async function resolveUrlFromArgOrClipboard(
+  argUrl: string | undefined,
+): Promise<string | null> {
   const arg = argUrl?.trim();
   if (arg && looksLikeUrl(arg)) return normalizeUrl(arg);
 

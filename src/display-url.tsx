@@ -1,4 +1,11 @@
-import { Action, ActionPanel, Detail, Form, LaunchProps, getPreferenceValues } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Detail,
+  Form,
+  LaunchProps,
+  getPreferenceValues,
+} from "@raycast/api";
 import { useEffect, useState } from "react";
 import { DisplayView } from "./lib/display-view";
 import { looksLikeUrl, normalizeUrl } from "./lib/url";
@@ -10,7 +17,9 @@ type State =
   | { kind: "form"; initialUrl: string }
   | { kind: "ready"; url: string };
 
-export default function DisplayUrl(props: LaunchProps<{ arguments: CommandArguments }>) {
+export default function DisplayUrl(
+  props: LaunchProps<{ arguments: CommandArguments }>,
+) {
   const preferences = getPreferenceValues<CommandPreferences>();
   const [state, setState] = useState<State>({ kind: "resolving" });
 
@@ -46,7 +55,10 @@ export default function DisplayUrl(props: LaunchProps<{ arguments: CommandArgume
   return <DisplayView url={state.url} preferences={preferences} />;
 }
 
-function UrlForm(props: { initialUrl: string; onSubmit: (url: string) => void }) {
+function UrlForm(props: {
+  initialUrl: string;
+  onSubmit: (url: string) => void;
+}) {
   const [url, setUrl] = useState(props.initialUrl);
   const valid = looksLikeUrl(url);
   return (

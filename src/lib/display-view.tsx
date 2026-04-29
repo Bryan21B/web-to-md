@@ -1,4 +1,13 @@
-import { Action, ActionPanel, Clipboard, Detail, Icon, Toast, showInFinder, showToast } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Clipboard,
+  Detail,
+  Icon,
+  Toast,
+  showInFinder,
+  showToast,
+} from "@raycast/api";
 import { basename } from "node:path";
 import { useEffect, useState } from "react";
 import { convertWebpageToMarkdown } from "./convert";
@@ -7,7 +16,13 @@ import type { CommandPreferences } from "./types";
 
 type State =
   | { kind: "loading"; status: string }
-  | { kind: "result"; url: string; title?: string; markdown: string; savedPath?: string }
+  | {
+      kind: "result";
+      url: string;
+      title?: string;
+      markdown: string;
+      savedPath?: string;
+    }
   | { kind: "error"; message: string };
 
 export function DisplayView(props: {
@@ -16,7 +31,10 @@ export function DisplayView(props: {
   onBeforeStart?: string;
 }) {
   const { url, preferences } = props;
-  const [state, setState] = useState<State>({ kind: "loading", status: props.onBeforeStart ?? "Fetching page…" });
+  const [state, setState] = useState<State>({
+    kind: "loading",
+    status: props.onBeforeStart ?? "Fetching page…",
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -30,11 +48,19 @@ export function DisplayView(props: {
           },
         });
         if (!cancelled) {
-          setState({ kind: "result", url: result.url, title: result.title, markdown: result.markdown });
+          setState({
+            kind: "result",
+            url: result.url,
+            title: result.title,
+            markdown: result.markdown,
+          });
         }
       } catch (err) {
         if (!cancelled) {
-          setState({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+          setState({
+            kind: "error",
+            message: err instanceof Error ? err.message : String(err),
+          });
         }
       }
     })();
@@ -45,7 +71,10 @@ export function DisplayView(props: {
 
   async function copyMarkdown(markdown: string) {
     await Clipboard.copy(markdown);
-    await showToast({ style: Toast.Style.Success, title: "Copied to clipboard" });
+    await showToast({
+      style: Toast.Style.Success,
+      title: "Copied to clipboard",
+    });
   }
 
   async function saveToFile(s: Extract<State, { kind: "result" }>) {
@@ -57,7 +86,11 @@ export function DisplayView(props: {
         preferences,
       });
       setState({ ...s, savedPath: outputPath });
-      await showToast({ style: Toast.Style.Success, title: "Saved", message: basename(outputPath) });
+      await showToast({
+        style: Toast.Style.Success,
+        title: "Saved",
+        message: basename(outputPath),
+      });
     } catch (err) {
       await showToast({
         style: Toast.Style.Failure,
@@ -81,8 +114,16 @@ export function DisplayView(props: {
       navigationTitle={state.title}
       actions={
         <ActionPanel>
-          <Action title="Copy to Clipboard" icon={Icon.Clipboard} onAction={() => copyMarkdown(state.markdown)} />
-          <Action title="Save to File" icon={Icon.SaveDocument} onAction={() => saveToFile(state)} />
+          <Action
+            title="Copy to Clipboard"
+            icon={Icon.Clipboard}
+            onAction={() => copyMarkdown(state.markdown)}
+          />
+          <Action
+            title="Save to File"
+            icon={Icon.SaveDocument}
+            onAction={() => saveToFile(state)}
+          />
           {state.savedPath && (
             <Action
               title="Show in Finder"

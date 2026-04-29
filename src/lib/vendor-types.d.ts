@@ -1,8 +1,8 @@
-declare module "turndown-plugin-gfm" {
-  // Minimal types to satisfy TypeScript; plugin is CommonJS.
-  export const gfm: unknown;
-  export const tables: unknown;
-  export const strikethrough: unknown;
-  export const taskListItems: unknown;
-}
+import TurndownService from "turndown";
 
+declare module "turndown-plugin-gfm" {
+  export const gfm: TurndownService.Plugin;
+  export const tables: TurndownService.Plugin;
+  export const strikethrough: TurndownService.Plugin;
+  export const taskListItems: TurndownService.Plugin;
+}

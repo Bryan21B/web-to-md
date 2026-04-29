@@ -1,9 +1,16 @@
-import { LaunchProps, Toast, getPreferenceValues, showToast } from "@raycast/api";
+import {
+  LaunchProps,
+  Toast,
+  getPreferenceValues,
+  showToast,
+} from "@raycast/api";
 import { runConversionToHud } from "./lib/run-conversion";
 import { resolveUrlFromArgOrClipboard } from "./lib/url-source";
 import type { CommandArguments, CommandPreferences } from "./lib/types";
 
-export default async function ConvertUrlToFile(props: LaunchProps<{ arguments: CommandArguments }>) {
+export default async function ConvertUrlToFile(
+  props: LaunchProps<{ arguments: CommandArguments }>,
+) {
   const preferences = getPreferenceValues<CommandPreferences>();
   const url = await resolveUrlFromArgOrClipboard(props.arguments.url);
 

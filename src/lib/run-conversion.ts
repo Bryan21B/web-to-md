@@ -12,7 +12,10 @@ export async function runConversionToHud(options: {
   preferences: CommandPreferences;
 }): Promise<void> {
   const { url, destination, preferences } = options;
-  const toast = await showToast({ style: Toast.Style.Animated, title: "Fetching page…" });
+  const toast = await showToast({
+    style: Toast.Style.Animated,
+    title: "Fetching page…",
+  });
 
   try {
     const result = await convertWebpageToMarkdown({

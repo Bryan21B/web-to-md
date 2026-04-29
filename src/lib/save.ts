@@ -17,7 +17,9 @@ export async function saveMarkdownToFile(options: {
   await fs.mkdir(outputDirectory, { recursive: true });
 
   const baseName = buildBaseFilename(title, preferences.fileNameStyle);
-  const filePath = await ensureUniquePath(path.join(outputDirectory, `${baseName}.md`));
+  const filePath = await ensureUniquePath(
+    path.join(outputDirectory, `${baseName}.md`),
+  );
 
   await fs.writeFile(filePath, markdown, "utf8");
   return filePath;
@@ -43,7 +45,10 @@ function buildBaseFilename(title: string | undefined, style?: string): string {
       ? `${date}-${safeTitle || "webpage"}`
       : `${safeTitle || `webpage-${date}-${now.toISOString().slice(11, 19).replace(/:/g, "")}`}`;
 
-  const sanitized = sanitizeFilename(raw).replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+  const sanitized = sanitizeFilename(raw)
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
   return sanitized || `webpage-${date}`;
 }
 

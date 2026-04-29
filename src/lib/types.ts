@@ -11,4 +11,3 @@ export type CommandPreferences = {
 export type CommandArguments = {
   url?: string;
 };
-

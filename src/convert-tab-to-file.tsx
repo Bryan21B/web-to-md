@@ -7,7 +7,11 @@ export default async function ConvertTabToFile() {
   const preferences = getPreferenceValues<CommandPreferences>();
   try {
     const tab = await getActiveTab();
-    await runConversionToHud({ url: tab.url, destination: "file", preferences });
+    await runConversionToHud({
+      url: tab.url,
+      destination: "file",
+      preferences,
+    });
   } catch (err) {
     await showToast({
       style: Toast.Style.Failure,

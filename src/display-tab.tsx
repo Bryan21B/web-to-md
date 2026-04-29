@@ -21,7 +21,10 @@ export default function DisplayTab() {
         if (!cancelled) setState({ kind: "ready", url: tab.url });
       } catch (err) {
         if (!cancelled) {
-          setState({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+          setState({
+            kind: "error",
+            message: err instanceof Error ? err.message : String(err),
+          });
         }
       }
     })();
@@ -35,7 +38,9 @@ export default function DisplayTab() {
   }
 
   if (state.kind === "error") {
-    return <Detail markdown={`# Could not read active tab\n\n${state.message}`} />;
+    return (
+      <Detail markdown={`# Could not read active tab\n\n${state.message}`} />
+    );
   }
 
   return <DisplayView url={state.url} preferences={preferences} />;

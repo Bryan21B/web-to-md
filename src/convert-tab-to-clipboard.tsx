@@ -7,7 +7,11 @@ export default async function ConvertTabToClipboard() {
   const preferences = getPreferenceValues<CommandPreferences>();
   try {
     const tab = await getActiveTab();
-    await runConversionToHud({ url: tab.url, destination: "clipboard", preferences });
+    await runConversionToHud({
+      url: tab.url,
+      destination: "clipboard",
+      preferences,
+    });
   } catch (err) {
     await showToast({
       style: Toast.Style.Failure,
