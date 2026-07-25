@@ -17,6 +17,7 @@ export function normalizeUrl(input: string): string {
   const withScheme = hasScheme ? trimmed : `https://${trimmed}`;
 
   const u = new URL(withScheme);
-  if (u.protocol !== "http:" && u.protocol !== "https:") throw new Error("URL must start with http:// or https://");
+  if (u.protocol !== "http:" && u.protocol !== "https:")
+    throw new Error("URL must start with http:// or https://");
   return u.toString();
 }

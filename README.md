@@ -1,27 +1,30 @@
-# Web to Markdown (Raycast Extension)
+# Web to Markdown
 
-Convert the main content of a webpage (blog articles, docs posts, etc.) into a Markdown file saved to your computer (defaults to `~/Downloads`) and copy the Markdown to your clipboard.
+Convert any webpage to clean Markdown — save to a file, copy to the clipboard, or preview right inside Raycast. Works with your active browser tab or any URL you provide.
 
-## Usage
+## Commands
 
-1. Import this extension in Raycast (`Import Extension`) and select this folder.
-2. In a terminal, from this folder:
-   - `npm install`
-   - `npm run dev`
-3. Run **Convert Webpage to Markdown** in Raycast.
+| Command | Description |
+|---|---|
+| **Save tab to file** | Convert the active browser tab to Markdown and save it to your output directory |
+| **Copy tab to clipboard** | Convert the active browser tab to Markdown and copy it to the clipboard |
+| **Save URL to file** | Convert a URL to Markdown and save it to your output directory |
+| **Copy URL to clipboard** | Convert a URL to Markdown and copy it to the clipboard |
+| **Display tab as .md** | Preview the active browser tab as Markdown inside Raycast, then save or copy |
+| **Display URL as .md** | Preview any URL as Markdown inside Raycast, then save or copy |
 
-### Input URL
+Tab commands require the Raycast Browser Extension. URL commands fall back to the clipboard if no URL is provided.
 
-- If you pass a `url` argument, the command runs immediately.
-- Otherwise it will prefill the URL field from your clipboard (if it looks like a URL).
+## Preferences
 
-### Output
+| Preference | Description |
+|---|---|
+| **Output Directory** | Where to save generated `.md` files (default: `~/Downloads`) |
+| **Filename Style** | `Title Slug` or `Date + Title Slug` |
+| **Frontmatter** | Optionally prepend YAML frontmatter with title, source URL, and saved date |
+| **External Fallback** | If local extraction fails, send the URL to a third-party reader service as a fallback |
+| **External Fallback Prefix** | The URL prefix for the fallback service (e.g. `https://r.jina.ai/https://`) |
 
-- Writes a `.md` file to the configured output directory (default `~/Downloads`).
-- Copies the generated Markdown to the clipboard.
+## How it works
 
-## Notes
-
-- By default, extraction is local (Readability + HTML→Markdown).
-- Optional external fallback can be enabled in command preferences. When enabled, the URL may be sent to a third-party service (as configured).
-
+Content is extracted locally using [Mozilla Readability](https://github.com/mozilla/readability) and converted to Markdown via [Turndown](https://github.com/mixmark-io/turndown). No data leaves your machine unless the external fallback is explicitly enabled.

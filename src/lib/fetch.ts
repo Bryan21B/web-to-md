@@ -13,4 +13,3 @@ export async function fetchText(url: string): Promise<string> {
 
   return await res.text();
 }
-

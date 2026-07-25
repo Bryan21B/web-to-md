@@ -13,12 +13,17 @@ export type ExtractedArticle = {
   bodyMarkdown: string;
 };
 
-export async function extractArticleMarkdown(url: string): Promise<ExtractedArticle | null> {
+export async function extractArticleMarkdown(
+  url: string,
+): Promise<ExtractedArticle | null> {
   const html = await fetchText(url);
   return extractArticleMarkdownFromHtml(html, url);
 }
 
-export function extractArticleMarkdownFromHtml(html: string, url: string): ExtractedArticle | null {
+export function extractArticleMarkdownFromHtml(
+  html: string,
+  url: string,
+): ExtractedArticle | null {
   const { document } = parseHTML(html);
 
   absolutizeDomLinksAndImages(document as unknown as Document, url);
@@ -39,7 +44,10 @@ export function extractArticleMarkdownFromHtml(html: string, url: string): Extra
   };
 }
 
-export async function extractFallbackMarkdown(url: string, prefix: string): Promise<ExtractedArticle | null> {
+export async function extractFallbackMarkdown(
+  url: string,
+  prefix: string,
+): Promise<ExtractedArticle | null> {
   const fallbackUrl = `${prefix}${url}`;
   const text = await fetchText(fallbackUrl);
 
@@ -60,14 +68,16 @@ function createTurndown(): TurndownService {
     emDelimiter: "_",
   });
 
-  service.use(gfm as any);
+  service.use(gfm);
 
   // Keep <pre><code> blocks as fenced blocks even when nested markup exists.
   service.addRule("fencedCodeBlocks", {
     filter: (node: HTMLElement) => {
       return (
         node.nodeName === "PRE" &&
-        Boolean(node.firstChild && (node.firstChild as Element).nodeName === "CODE")
+        Boolean(
+          node.firstChild && (node.firstChild as Element).nodeName === "CODE",
+        )
       );
     },
     replacement: (_content: string, node: HTMLElement) => {
