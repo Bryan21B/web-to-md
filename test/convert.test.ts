@@ -164,6 +164,30 @@ test("convertWebpageToMarkdown falls back to the reader service when the page it
   }
 });
 
+test("convertWebpageToMarkdown returns a frontmatter-free body for previews", async () => {
+  const restore = stubFetch({ [SHORT_PAGE_URL]: { body: SHORT_PAGE_HTML } });
+
+  try {
+    const result = await convertWebpageToMarkdown({
+      url: SHORT_PAGE_URL,
+      preferences: { includeFrontmatter: true },
+    });
+
+    // The saved/copied document keeps its frontmatter…
+    assert.match(result.markdown, /^---$/m);
+    assert.match(result.markdown, /^sourceURL: /m);
+
+    // …but Raycast's Detail renderer prints YAML frontmatter as literal text,
+    // so the preview body must not carry it.
+    assert.doesNotMatch(result.body, /^---$/m);
+    assert.doesNotMatch(result.body, /sourceURL/);
+    assert.doesNotMatch(result.body, /savedDate/);
+    assert.match(result.body, /HTTP caching headers/);
+  } finally {
+    restore();
+  }
+});
+
 test("convertWebpageToMarkdown surfaces the original fetch error when no fallback is configured", async () => {
   const restore = stubFetch({
     [SHORT_PAGE_URL]: { status: 403, statusText: "Forbidden" },

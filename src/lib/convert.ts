@@ -10,7 +10,14 @@ import type { CommandPreferences } from "./types";
 export type ConvertPreferences = CommandPreferences;
 
 export type ConversionResult = {
+  /** The full document, frontmatter included — what gets saved or copied. */
   markdown: string;
+  /**
+   * The article body on its own. Raycast's Detail renderer has no notion of
+   * YAML frontmatter and would print the block as literal text, so previews
+   * render this instead.
+   */
+  body: string;
   title: string | undefined;
   url: string;
 };
@@ -93,10 +100,8 @@ export async function convertWebpageToMarkdown(options: {
     extracted,
     preferences.includeFrontmatter ?? false,
   );
-  const markdown = combineFrontmatterAndBody(
-    frontmatter,
-    extracted.bodyMarkdown,
-  );
+  const body = extracted.bodyMarkdown.trim() + "\n";
+  const markdown = combineFrontmatterAndBody(frontmatter, body);
 
-  return { markdown, title: extracted.title, url };
+  return { markdown, body, title: extracted.title, url };
 }

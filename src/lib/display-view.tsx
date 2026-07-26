@@ -21,6 +21,7 @@ type State =
       url: string;
       title?: string;
       markdown: string;
+      body: string;
       savedPath?: string;
     }
   | { kind: "error"; message: string };
@@ -54,6 +55,7 @@ export function DisplayView(props: {
             url: result.url,
             title: result.title,
             markdown: result.markdown,
+            body: result.body,
           });
         }
       } catch (err) {
@@ -122,7 +124,7 @@ export function DisplayView(props: {
 
   return (
     <Detail
-      markdown={state.markdown}
+      markdown={state.body}
       navigationTitle={state.title}
       actions={
         <ActionPanel>
