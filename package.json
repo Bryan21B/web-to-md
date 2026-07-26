@@ -142,6 +142,10 @@
     "turndown": "^7.2.0",
     "turndown-plugin-gfm": "^1.0.2"
   },
+  "overrides": {
+    "esbuild": "^0.28.1",
+    "filelist": "^2.0.2"
+  },
   "devDependencies": {
     "@raycast/eslint-config": "^2.0.4",
     "@types/turndown": "^5.0.5",

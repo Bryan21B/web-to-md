@@ -6,6 +6,7 @@ import {
   Toast,
   showInFinder,
   showToast,
+  Keyboard,
 } from "@raycast/api";
 import { basename } from "node:path";
 import { useEffect, useState } from "react";
@@ -128,12 +129,12 @@ export function DisplayView(props: {
           <Action.CopyToClipboard
             title="Copy to Clipboard"
             content={state.markdown}
-            shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
+            shortcut={Keyboard.Shortcut.Common.Copy}
           />
           <Action
             title="Save to File"
             icon={Icon.SaveDocument}
-            shortcut={{ modifiers: ["cmd"], key: "s" }}
+            shortcut={Keyboard.Shortcut.Common.Save}
             onAction={() => saveToFile(state)}
           />
           {savedPath && (
