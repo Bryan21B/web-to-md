@@ -10,4 +10,3 @@ test("slugify trims and bounds output", () => {
   const long = "a".repeat(500);
   assert.equal(slugify(long).length <= 120, true);
 });
-

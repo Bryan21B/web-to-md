@@ -6,12 +6,12 @@ import {
 } from "@raycast/api";
 import { runConversionToHud } from "./lib/run-conversion";
 import { resolveUrlFromArgOrClipboard } from "./lib/url-source";
-import type { CommandArguments, CommandPreferences } from "./lib/types";
+import type { CommandArguments } from "./lib/types";
 
 export default async function ConvertUrlToFile(
   props: LaunchProps<{ arguments: CommandArguments }>,
 ) {
-  const preferences = getPreferenceValues<CommandPreferences>();
+  const preferences = getPreferenceValues<Preferences>();
   const url = await resolveUrlFromArgOrClipboard(props.arguments.url);
 
   if (!url) {

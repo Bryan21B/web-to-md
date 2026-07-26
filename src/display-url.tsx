@@ -8,9 +8,9 @@ import {
 } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { DisplayView } from "./lib/display-view";
-import { looksLikeUrl, normalizeUrl } from "./lib/url";
+import { tryNormalizeUrl } from "./lib/url";
 import { resolveUrlFromArgOrClipboard } from "./lib/url-source";
-import type { CommandArguments, CommandPreferences } from "./lib/types";
+import type { CommandArguments } from "./lib/types";
 
 type State =
   | { kind: "resolving" }
@@ -20,7 +20,7 @@ type State =
 export default function DisplayUrl(
   props: LaunchProps<{ arguments: CommandArguments }>,
 ) {
-  const preferences = getPreferenceValues<CommandPreferences>();
+  const preferences = getPreferenceValues<Preferences>();
   const [state, setState] = useState<State>({ kind: "resolving" });
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function DisplayUrl(
     return (
       <UrlForm
         initialUrl={state.initialUrl}
-        onSubmit={(url) => setState({ kind: "ready", url: normalizeUrl(url) })}
+        onSubmit={(url) => setState({ kind: "ready", url })}
       />
     );
   }
@@ -60,7 +60,8 @@ function UrlForm(props: {
   onSubmit: (url: string) => void;
 }) {
   const [url, setUrl] = useState(props.initialUrl);
-  const valid = looksLikeUrl(url);
+  const [error, setError] = useState<string | undefined>();
+
   return (
     <Form
       actions={
@@ -68,7 +69,12 @@ function UrlForm(props: {
           <Action.SubmitForm
             title="Convert"
             onSubmit={() => {
-              if (valid) props.onSubmit(url);
+              const normalized = tryNormalizeUrl(url);
+              if (normalized) {
+                props.onSubmit(normalized);
+              } else {
+                setError("Enter a http(s) URL, e.g. example.com/blog-post");
+              }
             }}
           />
         </ActionPanel>
@@ -79,7 +85,11 @@ function UrlForm(props: {
         title="URL"
         placeholder="https://example.com/blog-post"
         value={url}
-        onChange={setUrl}
+        error={error}
+        onChange={(value) => {
+          setUrl(value);
+          if (error) setError(undefined);
+        }}
       />
     </Form>
   );

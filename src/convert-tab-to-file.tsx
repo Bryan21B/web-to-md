@@ -1,14 +1,14 @@
 import { Toast, getPreferenceValues, showToast } from "@raycast/api";
-import { getActiveTab } from "./lib/active-tab";
+import { getActiveTabContent } from "./lib/active-tab";
 import { runConversionToHud } from "./lib/run-conversion";
-import type { CommandPreferences } from "./lib/types";
 
 export default async function ConvertTabToFile() {
-  const preferences = getPreferenceValues<CommandPreferences>();
+  const preferences = getPreferenceValues<Preferences>();
   try {
-    const tab = await getActiveTab();
+    const tab = await getActiveTabContent();
     await runConversionToHud({
       url: tab.url,
+      html: tab.html,
       destination: "file",
       preferences,
     });

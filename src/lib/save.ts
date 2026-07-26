@@ -11,18 +11,16 @@ export async function saveMarkdownToFile(options: {
   url: string;
   preferences: ConvertPreferences;
 }): Promise<string> {
-  const { title, markdown, preferences } = options;
+  const { title, markdown, url, preferences } = options;
 
   const outputDirectory = resolveOutputDirectory(preferences.outputDirectory);
   await fs.mkdir(outputDirectory, { recursive: true });
 
-  const baseName = buildBaseFilename(title, preferences.fileNameStyle);
-  const filePath = await ensureUniquePath(
+  const baseName = buildBaseFilename(title, url, preferences.fileNameStyle);
+  return writeWithoutOverwriting(
     path.join(outputDirectory, `${baseName}.md`),
+    markdown,
   );
-
-  await fs.writeFile(filePath, markdown, "utf8");
-  return filePath;
 }
 
 function resolveOutputDirectory(preferenceValue?: string): string {
@@ -35,8 +33,14 @@ function resolveOutputDirectory(preferenceValue?: string): string {
   return dir;
 }
 
-function buildBaseFilename(title: string | undefined, style?: string): string {
-  const safeTitle = title ? slugify(title) : "";
+function buildBaseFilename(
+  title: string | undefined,
+  url: string,
+  style?: string,
+): string {
+  // Fall back to the URL before resorting to a timestamp — "example-com-my-post"
+  // is far more useful than "webpage-2026-07-26-163655".
+  const safeTitle = (title ? slugify(title) : "") || slugifyUrl(url);
   const now = new Date();
   const date = now.toISOString().slice(0, 10);
 
@@ -52,20 +56,39 @@ function buildBaseFilename(title: string | undefined, style?: string): string {
   return sanitized || `webpage-${date}`;
 }
 
-async function ensureUniquePath(initialPath: string): Promise<string> {
+function slugifyUrl(url: string): string {
+  try {
+    const { hostname, pathname } = new URL(url);
+    return slugify(`${hostname}${pathname}`);
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Writes to the first free `name.md` / `name-2.md` / … path. Uses an exclusive
+ * create rather than checking existence first, so two saves racing on the same
+ * title cannot both resolve to the same path and silently lose one file.
+ */
+async function writeWithoutOverwriting(
+  initialPath: string,
+  markdown: string,
+): Promise<string> {
   const ext = path.extname(initialPath);
   const base = initialPath.slice(0, -ext.length);
 
-  let candidate = initialPath;
-  for (let i = 2; i < 1000; i++) {
+  for (let i = 1; i <= 1000; i++) {
+    const candidate = i === 1 ? initialPath : `${base}-${i}${ext}`;
     try {
-      await fs.access(candidate);
-      candidate = `${base}-${i}${ext}`;
-    } catch {
+      await fs.writeFile(candidate, markdown, { encoding: "utf8", flag: "wx" });
       return candidate;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== "EEXIST") throw err;
     }
   }
 
   // Extremely unlikely, but keep it bounded.
-  return `${base}-${Date.now()}${ext}`;
+  const fallback = `${base}-${Date.now()}${ext}`;
+  await fs.writeFile(fallback, markdown, { encoding: "utf8", flag: "wx" });
+  return fallback;
 }
