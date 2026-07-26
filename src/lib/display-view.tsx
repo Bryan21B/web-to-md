@@ -1,13 +1,4 @@
-import {
-  Action,
-  ActionPanel,
-  Detail,
-  Icon,
-  Toast,
-  showInFinder,
-  showToast,
-  Keyboard,
-} from "@raycast/api";
+import { Action, ActionPanel, Detail, Icon, Toast, showInFinder, showToast, Keyboard } from "@raycast/api";
 import { basename } from "node:path";
 import { useEffect, useState } from "react";
 import { convertWebpageToMarkdown } from "./convert";
@@ -26,11 +17,7 @@ type State =
     }
   | { kind: "error"; message: string };
 
-export function DisplayView(props: {
-  url: string;
-  html?: string;
-  preferences: CommandPreferences;
-}) {
+export function DisplayView(props: { url: string; html?: string; preferences: CommandPreferences }) {
   const { url, html, preferences } = props;
   const [state, setState] = useState<State>({
     kind: "loading",
@@ -109,10 +96,7 @@ export function DisplayView(props: {
         markdown={`# Error\n\n${state.message}`}
         actions={
           <ActionPanel>
-            <Action.CopyToClipboard
-              title="Copy Error"
-              content={state.message}
-            />
+            <Action.CopyToClipboard title="Copy Error" content={state.message} />
           </ActionPanel>
         }
       />

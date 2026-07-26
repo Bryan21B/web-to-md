@@ -13,10 +13,7 @@ const SHORT_PAGE_HTML = `<!doctype html><html><head><title>Short Note</title></h
 <article><h1>Short Note</h1><p class="byline">By Jane Doe</p><p>A brief but genuinely useful note about HTTP caching headers, short enough to look thin to the extractor.</p></article>
 </body></html>`;
 
-type StubResponse =
-  | { body: string }
-  | { status: number; statusText: string }
-  | { networkError: string };
+type StubResponse = { body: string } | { status: number; statusText: string } | { networkError: string };
 
 /**
  * Replaces globalThis.fetch for the duration of one test. node:test runs one
