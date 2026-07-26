@@ -33,8 +33,34 @@ export function combineFrontmatterAndBody(
   return `---\n${yaml}\n---\n\n${body}`;
 }
 
+const YAML_ESCAPES: Record<string, string> = {
+  "\\": "\\\\",
+  '"': '\\"',
+  "\n": "\\n",
+  "\r": "\\r",
+  "\t": "\\t",
+};
+
 function yamlEscape(value: string): string {
-  // Minimal YAML scalar escaping; keep it predictable for filenames/urls/titles.
-  const escaped = value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  // Double-quoted YAML scalars cannot contain raw line breaks or control
+  // characters. A page title holding a newline — accidental, or crafted to
+  // inject a "---" document marker — would otherwise terminate the frontmatter
+  // block early and leave the file unparseable.
+  let escaped = "";
+
+  for (const char of value) {
+    const known = YAML_ESCAPES[char];
+    if (known) {
+      escaped += known;
+      continue;
+    }
+
+    const code = char.codePointAt(0) ?? 0;
+    escaped +=
+      code < 0x20 || code === 0x7f
+        ? `\\x${code.toString(16).padStart(2, "0")}`
+        : char;
+  }
+
   return `"${escaped}"`;
 }

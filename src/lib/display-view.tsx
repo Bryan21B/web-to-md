@@ -1,12 +1,12 @@
 import {
   Action,
   ActionPanel,
-  Clipboard,
   Detail,
   Icon,
   Toast,
   showInFinder,
   showToast,
+  Keyboard,
 } from "@raycast/api";
 import { basename } from "node:path";
 import { useEffect, useState } from "react";
@@ -27,13 +27,13 @@ type State =
 
 export function DisplayView(props: {
   url: string;
+  html?: string;
   preferences: CommandPreferences;
-  onBeforeStart?: string;
 }) {
-  const { url, preferences } = props;
+  const { url, html, preferences } = props;
   const [state, setState] = useState<State>({
     kind: "loading",
-    status: props.onBeforeStart ?? "Fetching page…",
+    status: "Fetching page…",
   });
 
   useEffect(() => {
@@ -42,6 +42,7 @@ export function DisplayView(props: {
       try {
         const result = await convertWebpageToMarkdown({
           url,
+          html,
           preferences,
           onProgress: (status) => {
             if (!cancelled) setState({ kind: "loading", status });
@@ -57,6 +58,7 @@ export function DisplayView(props: {
         }
       } catch (err) {
         if (!cancelled) {
+          console.error("[web-to-md] conversion failed:", err);
           setState({
             kind: "error",
             message: err instanceof Error ? err.message : String(err),
@@ -67,31 +69,26 @@ export function DisplayView(props: {
     return () => {
       cancelled = true;
     };
-  }, [url]);
+    // Deliberately not depending on `preferences`: getPreferenceValues()
+    // returns a fresh object every render, which would re-convert forever.
+  }, [url, html]);
 
-  async function copyMarkdown(markdown: string) {
-    await Clipboard.copy(markdown);
-    await showToast({
-      style: Toast.Style.Success,
-      title: "Copied to clipboard",
-    });
-  }
-
-  async function saveToFile(s: Extract<State, { kind: "result" }>) {
+  async function saveToFile(result: Extract<State, { kind: "result" }>) {
     try {
       const outputPath = await saveMarkdownToFile({
-        title: s.title,
-        markdown: s.markdown,
-        url: s.url,
+        title: result.title,
+        markdown: result.markdown,
+        url: result.url,
         preferences,
       });
-      setState({ ...s, savedPath: outputPath });
+      setState({ ...result, savedPath: outputPath });
       await showToast({
         style: Toast.Style.Success,
         title: "Saved",
         message: basename(outputPath),
       });
     } catch (err) {
+      console.error("[web-to-md] save failed:", err);
       await showToast({
         style: Toast.Style.Failure,
         title: "Failed to save",
@@ -105,8 +102,23 @@ export function DisplayView(props: {
   }
 
   if (state.kind === "error") {
-    return <Detail markdown={`# Error\n\n${state.message}`} />;
+    return (
+      <Detail
+        markdown={`# Error\n\n${state.message}`}
+        actions={
+          <ActionPanel>
+            <Action.CopyToClipboard
+              title="Copy Error"
+              content={state.message}
+            />
+          </ActionPanel>
+        }
+      />
+    );
   }
+
+  // Hoisted so the truthiness check narrows inside the callback below.
+  const savedPath = state.savedPath;
 
   return (
     <Detail
@@ -114,21 +126,23 @@ export function DisplayView(props: {
       navigationTitle={state.title}
       actions={
         <ActionPanel>
-          <Action
+          <Action.CopyToClipboard
             title="Copy to Clipboard"
-            icon={Icon.Clipboard}
-            onAction={() => copyMarkdown(state.markdown)}
+            content={state.markdown}
+            shortcut={Keyboard.Shortcut.Common.Copy}
           />
           <Action
             title="Save to File"
             icon={Icon.SaveDocument}
+            shortcut={Keyboard.Shortcut.Common.Save}
             onAction={() => saveToFile(state)}
           />
-          {state.savedPath && (
+          {savedPath && (
             <Action
               title="Show in Finder"
               icon={Icon.Finder}
-              onAction={() => showInFinder(state.savedPath as string)}
+              shortcut={{ modifiers: ["cmd", "shift"], key: "f" }}
+              onAction={() => showInFinder(savedPath)}
             />
           )}
         </ActionPanel>

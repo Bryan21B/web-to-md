@@ -46,8 +46,8 @@
       "type": "checkbox",
       "required": false,
       "title": "Frontmatter",
-      "description": "Include YAML frontmatter at the top of the Markdown file.",
-      "label": "Include frontmatter",
+      "description": "Add the page title and author to the YAML frontmatter. The source URL and saved date are always included.",
+      "label": "Include title & author",
       "default": false
     },
     {
@@ -100,7 +100,7 @@
     },
     {
       "name": "convert-url-to-clipboard",
-      "title": "Save URL to Clipboard",
+      "title": "Copy URL to Clipboard",
       "description": "Convert a URL to Markdown and copy it to the clipboard. Falls back to clipboard URL if no URL is given.",
       "mode": "no-view",
       "arguments": [
@@ -142,6 +142,10 @@
     "turndown": "^7.2.0",
     "turndown-plugin-gfm": "^1.0.2"
   },
+  "overrides": {
+    "esbuild": "^0.28.1",
+    "filelist": "^2.0.2"
+  },
   "devDependencies": {
     "@raycast/eslint-config": "^2.0.4",
     "@types/turndown": "^5.0.5",
@@ -152,7 +156,10 @@
     "dev": "ray develop",
     "build": "ray build -o dist",
     "lint": "ray lint",
-    "test": "node --import tsx --test",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit",
+    "format": "prettier --write src test",
+    "format:check": "prettier --check src test",
+    "test": "node --import tsx --test \"test/**/*.test.ts\"",
     "publish": "npx @raycast/api@latest publish"
   }
 }
