@@ -1,7 +1,7 @@
 import { Action, ActionPanel, Detail, Icon, Toast, showInFinder, showToast, Keyboard } from "@raycast/api";
 import { basename } from "node:path";
 import { useEffect, useState } from "react";
-import { convertWebpageToMarkdown } from "./convert";
+import { type ContentKind, convertContent } from "./convert";
 import { saveMarkdownToFile } from "./save";
 import type { CommandPreferences } from "./types";
 
@@ -17,8 +17,13 @@ type State =
     }
   | { kind: "error"; message: string };
 
-export function DisplayView(props: { url: string; html?: string; preferences: CommandPreferences }) {
-  const { url, html, preferences } = props;
+export function DisplayView(props: {
+  url: string;
+  html?: string;
+  preferences: CommandPreferences;
+  kind?: ContentKind;
+}) {
+  const { url, html, preferences, kind } = props;
   const [state, setState] = useState<State>({
     kind: "loading",
     status: "Fetching page…",
@@ -28,7 +33,8 @@ export function DisplayView(props: { url: string; html?: string; preferences: Co
     let cancelled = false;
     (async () => {
       try {
-        const result = await convertWebpageToMarkdown({
+        const result = await convertContent({
+          kind,
           url,
           html,
           preferences,
@@ -60,7 +66,7 @@ export function DisplayView(props: { url: string; html?: string; preferences: Co
     };
     // Deliberately not depending on `preferences`: getPreferenceValues()
     // returns a fresh object every render, which would re-convert forever.
-  }, [url, html]);
+  }, [url, html, kind]);
 
   async function saveToFile(result: Extract<State, { kind: "result" }>) {
     try {

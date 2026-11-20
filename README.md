@@ -12,6 +12,9 @@ Convert any webpage to clean Markdown — save to a file, copy to the clipboard,
 | **Copy URL to Clipboard** | Convert a URL to Markdown and copy it to the clipboard |
 | **Display Tab as Markdown** | Preview the active browser tab as Markdown inside Raycast, then save or copy |
 | **Display URL as Markdown** | Preview any URL as Markdown inside Raycast, then save or copy |
+| **Copy YouTube Transcript** | Copy the transcript of the YouTube video in the active tab |
+| **Save YouTube Transcript** | Save the transcript of the YouTube video in the active tab to your output directory |
+| **Display YouTube Transcript** | Preview the transcript of the YouTube video in the active tab, then save or copy |
 
 Tab commands require the Raycast Browser Extension. URL commands fall back to the clipboard if no URL is provided.
 
@@ -24,9 +27,13 @@ Tab commands require the Raycast Browser Extension. URL commands fall back to th
 | **Frontmatter** | Add the page title and author to the frontmatter. The source URL and saved date are always written |
 | **External Fallback** | If local extraction fails, send the URL to a third-party reader service as a fallback |
 | **External Fallback Prefix** | The prefix the page URL is appended to (e.g. `https://r.jina.ai/`) |
+| **Transcript Language** | `Auto` uses the video's original language (not an auto-dubbed one). `Fixed` uses the language below whenever the video has captions in it, otherwise the original. Uploaded captions are preferred over auto-generated ones |
+| **Backup / Fixed Language** | In Auto mode, the language used when YouTube doesn't say which track is the original. In Fixed mode, the language to use |
 
 ## How it works
 
 Tab commands read the page's already-rendered HTML from the Raycast Browser Extension, so pages behind a login and pages rendered client-side convert correctly. URL commands fetch the page directly (20s timeout, 20 MB cap).
 
 Content is extracted locally using [Mozilla Readability](https://github.com/mozilla/readability) and converted to Markdown via [Turndown](https://github.com/mixmark-io/turndown). No data leaves your machine unless the external fallback is explicitly enabled.
+
+YouTube transcript commands are the exception: they request the video's caption tracks from YouTube by video ID, then format them as timestamped paragraphs. Each timestamp links to that moment in the video.

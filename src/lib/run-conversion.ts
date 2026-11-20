@@ -1,6 +1,6 @@
 import { Clipboard, Toast, showHUD, showToast } from "@raycast/api";
 import { basename } from "node:path";
-import { convertWebpageToMarkdown } from "./convert";
+import { type ContentKind, convertContent } from "./convert";
 import { saveMarkdownToFile } from "./save";
 import type { CommandPreferences } from "./types";
 
@@ -12,15 +12,17 @@ export async function runConversionToHud(options: {
   html?: string;
   destination: ConversionDestination;
   preferences: CommandPreferences;
+  kind?: ContentKind;
 }): Promise<void> {
-  const { url, html, destination, preferences } = options;
+  const { url, html, destination, preferences, kind } = options;
   const toast = await showToast({
     style: Toast.Style.Animated,
     title: html ? "Reading page…" : "Fetching page…",
   });
 
   try {
-    const result = await convertWebpageToMarkdown({
+    const result = await convertContent({
+      kind,
       url,
       html,
       preferences,
