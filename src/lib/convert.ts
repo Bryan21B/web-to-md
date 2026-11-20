@@ -2,6 +2,7 @@ import type { ExtractedArticle } from "./extract";
 import { extractArticleMarkdown, extractArticleMarkdownFromHtml, extractFallbackMarkdown } from "./extract";
 import { buildFrontmatter, combineFrontmatterAndBody } from "./frontmatter";
 import type { CommandPreferences } from "./types";
+import { convertYouTubeTranscript } from "./youtube";
 
 export type ConvertPreferences = CommandPreferences;
 
@@ -91,4 +92,16 @@ export async function convertWebpageToMarkdown(options: {
   const markdown = combineFrontmatterAndBody(frontmatter, body);
 
   return { markdown, body, title: extracted.title, url };
+}
+
+/** What a command turns the page into. */
+export type ContentKind = "webpage" | "youtube-transcript";
+
+export function convertContent(
+  options: Parameters<typeof convertWebpageToMarkdown>[0] & { kind?: ContentKind },
+): Promise<ConversionResult> {
+  const { kind = "webpage", ...rest } = options;
+  // The transcript comes from YouTube's API, not the page DOM: after in-app
+  // navigation the DOM can still describe the previous video.
+  return kind === "youtube-transcript" ? convertYouTubeTranscript(rest) : convertWebpageToMarkdown(rest);
 }
